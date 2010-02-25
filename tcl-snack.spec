@@ -1,4 +1,4 @@
-%define realname snack
+%define		realname	snack
 Summary:	Sound toolkit
 Name:		tcl-%{realname}
 Version:	2.2.10
@@ -16,6 +16,8 @@ BuildRequires:	alsa-lib-devel
 BuildRequires:	libogg-devel
 BuildRequires:	libvorbis-devel
 BuildRequires:	python-devel
+BuildRequires:	rpmbuild(macros) >= 1.219
+BuildRequires:	sed >= 4.0
 BuildRequires:	tcl-devel
 BuildRequires:	tk-devel
 BuildRequires:	xorg-lib-libXft-devel
@@ -25,19 +27,21 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
 The Snack Sound Toolkit is designed to be used with a scripting
-language such as Tcl/Tk or Python. Using Snack you can create powerful
-multi-platform audio applications with just a few lines of code. Snack
-has commands for basic sound handling, such as playback, recording,
-file and socket I/O. Snack also provides primitives for sound
-visualization, e.g. waveforms and spectrograms. It was developed
-mainly to handle digital recordings of speech, but is just as useful
-for general audio. Snack has also successfully been applied to other
-one-dimensional signals. The combination of Snack and a scripting
-language makes it possible to create sound tools and applications with
-a minimum of effort. This is due to the rapid development nature of
-scripting languages. As a bonus you get an application that is
-cross-platform from start. It is also easy to integrate Snack based
-applications with existing sound analysis software.
+language such as Tcl/Tk or Python.
+
+Using Snack you can create powerful multi-platform audio applications
+with just a few lines of code. Snack has commands for basic sound
+handling, such as playback, recording, file and socket I/O. Snack also
+provides primitives for sound visualization, e.g. waveforms and
+spectrograms. It was developed mainly to handle digital recordings of
+speech, but is just as useful for general audio. Snack has also
+successfully been applied to other one-dimensional signals. The
+combination of Snack and a scripting language makes it possible to
+create sound tools and applications with a minimum of effort. This is
+due to the rapid development nature of scripting languages. As a bonus
+you get an application that is cross-platform from start. It is also
+easy to integrate Snack based applications with existing sound
+analysis software.
 
 %package devel
 Summary:	Development files for Snack Sound Toolkit
@@ -88,17 +92,19 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} -C unix install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
-
 cd python
 %{__python} setup.py install \
-	--root $RPM_BUILD_ROOT \
-	--skip-build
+	--skip-build \
+	--optimize=2 \
+	--root $RPM_BUILD_ROOT
+cd -
+install -d $RPM_BUILD_ROOT%{_examplesdir}/python-%{realname}-%{version}
+cp -a demos/python/* $RPM_BUILD_ROOT%{_examplesdir}/python-%{realname}-%{version}
+
+%py_postclean
 
 install -d $RPM_BUILD_ROOT%{tcl_sitearch}
 mv $RPM_BUILD_ROOT%{_libdir}/%{realname}2.2 $RPM_BUILD_ROOT%{tcl_sitearch}/%{realname}2.2
-chmod -x $RPM_BUILD_ROOT%{tcl_sitearch}/%{realname}2.2/snack.tcl
-cd -
 
 # Devel bits
 install -d $RPM_BUILD_ROOT%{_includedir}
@@ -113,9 +119,14 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc COPYING README
-%{_libdir}/libsnackstub2.2.so
-%{tcl_sitearch}/%{realname}2.2/
+%doc README
+%attr(755,root,root) %{_libdir}/libsnackstub2.2.so
+%dir %{tcl_sitearch}/%{realname}2.2
+%{tcl_sitearch}/%{realname}2.2/pkgIndex.tcl
+%{tcl_sitearch}/%{realname}2.2/snack.tcl
+%attr(755,root,root) %{tcl_sitearch}/%{realname}2.2/libsnack.so
+%attr(755,root,root) %{tcl_sitearch}/%{realname}2.2/libsnackogg.so
+%attr(755,root,root) %{tcl_sitearch}/%{realname}2.2/libsound.so
 
 %files devel
 %defattr(644,root,root,755)
@@ -124,5 +135,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -n python-%{realname}
 %defattr(644,root,root,755)
-%doc doc/python-man.html demos/python/
-%{py_sitedir}/tkSnack*
+%doc doc/python-man.html
+%{py_sitescriptdir}/tkSnack.py[co]
+%if "%{py_ver}" > "2.4"
+%{py_sitescriptdir}/tkSnack-*.egg-info
+%endif
+%{_examplesdir}/python-%{realname}-%{version}
