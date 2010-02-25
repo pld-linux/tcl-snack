@@ -1,0 +1,14 @@
+diff -up snack2.2.10/unix/Makefile.in.BAD snack2.2.10/unix/Makefile.in
+--- snack2.2.10/unix/Makefile.in.BAD	2008-06-11 15:26:32.000000000 -0400
++++ snack2.2.10/unix/Makefile.in	2008-06-11 15:26:55.000000000 -0400
+@@ -31,7 +31,9 @@ CC        = @CC@
+ 
+ INCLUDES  = ${XINCLUDES} @TCL_INCLUDE_SPEC@ -I${TCL_INCPATH} -I${TK_INCPATH} @AINC@ @NISTINC@
+ 
+-CFLAGS    = -O @CFLAGS@ @AFLAG@ ${INCLUDES} @TCLAPI@ -I${GENERIC_DIR} @DEFS@
++EXTRACFLAGS =
++
++CFLAGS    = -O @CFLAGS@ @AFLAG@ ${INCLUDES} ${EXTRACFLAGS} @TCLAPI@ -I${GENERIC_DIR} @DEFS@
+ 
+ LIBSO     = -lc @ALIB@ @TCL_LIB_SPEC@
+ 

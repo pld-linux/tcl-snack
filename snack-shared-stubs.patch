@@ -1,0 +1,36 @@
+diff -up snack2.2.10/unix/configure.shared-stubs snack2.2.10/unix/configure
+--- snack2.2.10/unix/configure.shared-stubs	2008-06-11 16:33:05.000000000 -0400
++++ snack2.2.10/unix/configure	2008-06-11 16:33:33.000000000 -0400
+@@ -1663,7 +1663,7 @@ echo "${ECHO_T}will use stubs (normal)" 
+     TCL_LIB_SPEC="${TCL_STUB_LIB_SPEC}"
+     TK_LIB_SPEC="${TK_STUB_LIB_SPEC}"
+     STUBINITOBJ="snackStubInit.o"
+-    DOSTUBLIB="stublib"
++    DOSTUBLIB="libsnackstub$SNACK_VERSION${SHLIB_SUFFIX}"
+     SNACK_STUB_LIB_FLAG="-lsnackstub$SNACK_VERSION"
+     if test "$TCLVER" = "8.0"; then
+         { echo "$as_me:$LINENO: WARNING: \"You probably forgot to specify --disable-stubs\"" >&5
+diff -up snack2.2.10/unix/Makefile.in.shared-stubs snack2.2.10/unix/Makefile.in
+--- snack2.2.10/unix/Makefile.in.shared-stubs	2008-06-11 16:29:57.000000000 -0400
++++ snack2.2.10/unix/Makefile.in	2008-06-11 16:32:36.000000000 -0400
+@@ -164,8 +164,9 @@ libsnack${SHLIB_SUFFIX}: ${OBJSN}
+ 	${SHLIB_LD} ${OBJSN} ${LIBSN} -o libsnack${SHLIB_SUFFIX} 
+ 	sed s/.dll/${SHLIB_SUFFIX}/ < $(UNIX_DIR)/pkgIndex.tcl.dll > pkgIndex.tcl
+ 
+-stublib: ${OBJSNST}
+-	ar cr libsnackstub${VERSION}.a ${OBJSNST}
++libsnackstub${VERSION}${SHLIB_SUFFIX}: ${OBJSNST}
++	${SHLIB_LD} ${OBJSNST} -o libsnackstub${VERSION}${SHLIB_SUFFIX}
++#	ar cr libsnackstub${VERSION}.a ${OBJSNST}
+ 
+ editversion: ${OBJSN}
+ 	if test "$(TCL_VERSION)" != "8.4"; then\
+@@ -310,7 +311,7 @@ install:
+         fi;
+ 	cp -f libsound${SHLIB_SUFFIX} ${DESTDIR}${SNACK_INSTALL_PATH}/snack${VERSION}/
+ 	cp -f libsnack${SHLIB_SUFFIX} ${DESTDIR}${SNACK_INSTALL_PATH}/snack${VERSION}/
+-	if test -f libsnackstub${VERSION}.a; then cp -f libsnackstub${VERSION}.a ${DESTDIR}${SNACK_INSTALL_PATH}/; fi
++	if test -f libsnackstub${VERSION}${SHLIB_SUFFIX}; then cp -f libsnackstub${VERSION}${SHLIB_SUFFIX} ${DESTDIR}${SNACK_INSTALL_PATH}/; fi
+ 	if test -f libsnacksphere${SHLIB_SUFFIX}; then cp -f libsnacksphere${SHLIB_SUFFIX} ${DESTDIR}${SNACK_INSTALL_PATH}/snack${VERSION}/; fi
+ 	if test -f libsnackogg${SHLIB_SUFFIX}; then cp -f libsnackogg${SHLIB_SUFFIX} ${DESTDIR}${SNACK_INSTALL_PATH}/snack${VERSION}/; fi
+ 	cp -f $(UNIX_DIR)/snack.tcl ${DESTDIR}${SNACK_INSTALL_PATH}/snack${VERSION}/
