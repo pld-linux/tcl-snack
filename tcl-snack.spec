@@ -11,6 +11,7 @@ Source0:	http://www.speech.kth.se/snack/dist/snack%{version}.tar.gz
 Patch1:		snack-extracflags.patch
 Patch2:		snack-shared-stubs.patch
 Patch3:		snack-newALSA.patch
+Patch4:		glibc2.10.patch
 BuildRequires:	alsa-lib-devel
 BuildRequires:	libogg-devel
 BuildRequires:	libvorbis-devel
@@ -60,13 +61,15 @@ Tcl, Tk, and Tkinter are also required to use Snack.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
+
 chmod -x generic/*.c generic/*.h unix/*.c COPYING README demos/python/*
 iconv -f iso-8859-1 -t utf-8 -o README{.utf8,}
 mv README{.utf8,}
 sed -i -e 's|\r||g' demos/python/*.txt
 
 %build
-cd unix/
+cd unix
 %configure \
 	--disable-static \
 	--with-tcl=%{_libdir} \
@@ -75,19 +78,23 @@ cd unix/
 	--with-ogg-lib=%{_libdir} \
 	--enable-alsa \
 
-%{__make} EXTRACFLAGS="%{optflags}"
+%{__make} EXTRACFLAGS="%{rpmcflags}"
+
 cd ../python
 %{__python} setup.py build
 
 %install
 rm -rf $RPM_BUILD_ROOT
-cd unix
-%{__make} install DESTDIR=$RPM_BUILD_ROOT
+%{__make} -C unix install \
+	DESTDIR=$RPM_BUILD_ROOT
+
 find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
-cd -
 
 cd python
-%{__python} setup.py install --skip-build --root $RPM_BUILD_ROOT
+%{__python} setup.py install \
+	--root $RPM_BUILD_ROOT \
+	--skip-build
+
 install -d $RPM_BUILD_ROOT%{tcl_sitearch}
 mv $RPM_BUILD_ROOT%{_libdir}/%{realname}2.2 $RPM_BUILD_ROOT%{tcl_sitearch}/%{realname}2.2
 chmod -x $RPM_BUILD_ROOT%{tcl_sitearch}/%{realname}2.2/snack.tcl
