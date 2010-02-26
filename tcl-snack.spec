@@ -13,9 +13,12 @@ Patch2:		snack-shared-stubs.patch
 Patch3:		snack-newALSA.patch
 Patch4:		glibc2.10.patch
 BuildRequires:	alsa-lib-devel
+BuildRequires:	iconv
 BuildRequires:	libogg-devel
 BuildRequires:	libvorbis-devel
 BuildRequires:	python-devel
+BuildRequires:	python-modules
+BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.219
 BuildRequires:	sed >= 4.0
 BuildRequires:	tcl-devel
@@ -76,8 +79,8 @@ sed -i -e 's|\r||g' demos/python/*.txt
 cd unix
 %configure \
 	--disable-static \
-	--with-tcl=%{_libdir} \
-	--with-tk=%{_libdir} \
+	--with-tcl=%{_prefix}/lib \
+	--with-tk=%{_prefix}/lib \
 	--with-ogg-include=%{_includedir} \
 	--with-ogg-lib=%{_libdir} \
 	--enable-alsa \
