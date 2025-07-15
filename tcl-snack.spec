@@ -65,10 +65,10 @@ Tcl, Tk, and Tkinter are also required to use Snack.
 
 %prep
 %setup -q -n %{realname}%{version}
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
+%patch -P1 -p1
+%patch -P2 -p1
+%patch -P3 -p1
+%patch -P4 -p1
 
 chmod -x generic/*.c generic/*.h unix/*.c COPYING README demos/python/*
 iconv -f iso-8859-1 -t utf-8 -o README{.utf8,}
